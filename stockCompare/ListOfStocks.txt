@@ -1,0 +1,15 @@
+
+Tesla TSLA Automotive 805.30 109.12 834.605 687.20 0.0
+Microsoft MSFT Technology 267.7 27.94 2000.0 265.02 2.48
+Apple AAPL Technology 141.66 23.08 22930.0 133.11 0.92
+NVIDIA NVDA Computer 171.26 45.93 426.78 190.31 0.16
+AMD AMD Semiconductor 87.08 32.68 141.114 85.62 0.0
+Delta DAL Air-Transportation 31.2 38.81 20.001 44.43 0.0
+General-Motors GM Automotive 34.82 5.78 50.776 60.3 0.0
+United-Airlines UAL Air-Transportation 38.51 0.26 12.582 53.88 0.0
+Intel INTC Semiconductor 38.61 6.41 157.876 55.98 1.46
+Google GOOG Technology 108.21 20.73 1422.0 135.22 0.0
+Amazon.com AMZN Technology 121.14 59.38 1233.0 166.38 0.0
+Twitter TWTR Social-Media 39.25 157.0 29.994 42.66 0.0
+Meta-Platforms META Social-Media 166.65 13.67 451.008 356.3 0.0
+Snap SNAP Social-Media 9.97 0.0 16.44 74.42 0.0
