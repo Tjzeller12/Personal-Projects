@@ -22,7 +22,7 @@ import javax.swing.JTextField;
 import javax.swing.SwingConstants;
 import javax.swing.table.DefaultTableModel;
 /**
- * The AddStockView class is a frame that allows the user to add stocks and stock information to the "ListOFStocks.txt" text file
+ * The AddStockView class is a frame that allows the user to add and update stocks and stock information.
  * @author Thomas Zeller
  * 
  */
@@ -75,7 +75,7 @@ public class AddStockView extends JFrame implements ActionListener{
 	private ArrayList<Stock> mainList;
 	
 	/**
-	 * Constructs and adds all components to Frame. The main components are the button panel, statistic panel, and the main panel.
+	 * Constructs and adds all components to Frame. The main components are the button panel, statistic panel, table panel, and the main panel.
 	 */
 	public AddStockView(Main pMain) {
 		

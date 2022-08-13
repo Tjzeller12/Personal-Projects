@@ -17,11 +17,9 @@ import javax.swing.JPanel;
 public class View extends JFrame implements ActionListener {
 	
 	private Main main;
-	
 	//Frame default dimensions
 	final int FRAME_WIDTH = 500;
 	final int FRAME_HIEGHT = 100;
-	
 	//Main Panel instance variables
 	private JButton industryCompare;
 	private JButton stockCompare;
@@ -33,9 +31,8 @@ public class View extends JFrame implements ActionListener {
 	 * @param pMain
 	 */
 	public View( Main pMain) {
-		
+	
 		main = pMain;
-		
 		// Main Panel includes four buttons, three buttons open other frames, the last closes the program
 		JPanel mainPanel = new JPanel();
 		mainPanel.setLayout(new BoxLayout(mainPanel, BoxLayout.X_AXIS));

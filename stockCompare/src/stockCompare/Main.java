@@ -27,11 +27,16 @@ public class Main {
 		setList();
 		View view = new View(this);
 	}
-	
+	/**
+	 * Getter method for main list
+	 * @return mainList
+	 */
 	public ArrayList<Stock> getMainList() {
 		return mainList;
 	}
-	
+	/**
+	 * setter for main list. Reads off the file than sorts the list alphabetically.
+	 */
 	public void setList() {
 		Reader readMain = new Reader();
 		try {

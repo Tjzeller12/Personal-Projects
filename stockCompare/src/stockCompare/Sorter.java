@@ -3,7 +3,7 @@ package stockCompare;
 
 import java.util.ArrayList;
 /**
- * Uses a quick sort algorithm with an avarage time complexity of O(n*log(n))
+ * Uses a quick sort algorithm with an average time complexity of O(n*log(n)). It sorts by rating or by name depending on the sortedBy param
  * @author Thomas Zeller
  *
  */
@@ -15,7 +15,7 @@ public class Sorter {
 	 * @param pList
 	 * @param pFromIndex
 	 * @param pToIndex
-	 * @param p
+	 * @param sortedBy
 	 * @return Right index (indexR)
 	 */
 	private static int partition(ArrayList<Stock> pList, int pFromIndex, int pToIndex, int sortedBy) {

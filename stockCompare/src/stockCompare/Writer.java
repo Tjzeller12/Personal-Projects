@@ -15,7 +15,12 @@ import java.util.Scanner;
 public class Writer extends PrintWriter{
 	
 	private Stock addedStock;
-	
+	/**
+	 * Constructs Writer
+	 * @param pFileName
+	 * @throws FileNotFoundException
+	 * @throws IOException
+	 */
 	public Writer( String pFileName) throws FileNotFoundException, IOException {
 		
 		super(new FileWriter(new File(pFileName), false));	
@@ -31,10 +36,6 @@ public class Writer extends PrintWriter{
 		}
 		super.close();
 	}
-	
-	public void updateFile(Stock pStock, String pFileName) throws FileNotFoundException {
-	}
-	
 	/**
 	 * closes the PrintWriter(Writer)
 	 */
