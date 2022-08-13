@@ -2,6 +2,7 @@ package stockCompare;
 
 import java.awt.Color;
 import java.awt.Dimension;
+import java.awt.Font;
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -15,8 +16,11 @@ import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
+import javax.swing.JScrollPane;
+import javax.swing.JTable;
 import javax.swing.JTextField;
 import javax.swing.SwingConstants;
+import javax.swing.table.DefaultTableModel;
 /**
  * The AddStockView class is a frame that allows the user to add stocks and stock information to the "ListOFStocks.txt" text file
  * @author Thomas Zeller
@@ -26,7 +30,7 @@ public class AddStockView extends JFrame implements ActionListener{
 	
 	//Set Frame width and Height 
 	final int FRAME_WIDTH = 1000;
-	final int FRAME_HEIGHT = 300;
+	final int FRAME_HEIGHT = 475;
 	// Add stock view Instance variables:
 	// Title label
 	private JLabel titleLabel;
@@ -58,12 +62,43 @@ public class AddStockView extends JFrame implements ActionListener{
 	//ArrayList for JLabels and JTextFields
 	private ArrayList<JLabel> statisticLabelList;
 	private ArrayList<JTextField> statisticTextFieldList;
+	//Table variables
+	private JLabel tableLabel;
+	private JLabel tableLabel2;
+	private final String[] COLUMNAMES = {"Name", "Symbol", "Industry", "Stock Price", "P/E Ratio", "Market Cap", "Year Start Price", "Dividend"};
+	private String[][] data = {{"N/A","N/A","N/A","N/A","N/A","N/A","N/A","N/A"}};
+	private JTable mainTable;
+	private DefaultTableModel model;
+	private JScrollPane mainSP;
+	//Main variables
+	private Main main;
+	private ArrayList<Stock> mainList;
 	
 	/**
 	 * Constructs and adds all components to Frame. The main components are the button panel, statistic panel, and the main panel.
 	 */
-	public AddStockView() {
+	public AddStockView(Main pMain) {
 		
+		//initiating main variables
+		main = pMain;
+		mainList = main.getMainList();
+		//Table Panel includes every stock in the mainList
+		JPanel tablePanel = new JPanel();
+		tablePanel.setLayout(new BoxLayout(tablePanel, BoxLayout.Y_AXIS));
+		JPanel tableLabelPanel = new JPanel();
+		tableLabelPanel.setLayout(new BoxLayout(tableLabelPanel, BoxLayout.X_AXIS));
+		tableLabel = new JLabel("All stock data:");
+		tableLabel.setFont(new Font("Lucida Grande", Font.BOLD, 14));
+		tableLabel2 = new JLabel(" (Enter new stock information into the table cells and click \"Save\" to save new stock information)");
+		System.out.println(tableLabel2.getFont());
+		tableLabel2.setForeground(Color.GRAY);
+		tableLabelPanel.add(tableLabel); tableLabelPanel.add(tableLabel2);
+		model = new DefaultTableModel(data, COLUMNAMES);
+		mainTable = new JTable(model);
+		mainSP = new JScrollPane(mainTable);
+		addListToTable(mainList);
+		tablePanel.add(tableLabelPanel);
+		tablePanel.add(mainSP);
 		//Button Panel for back clear and add buttons
 		JPanel buttonPanel = new JPanel();
 		back = button("Back", 100, 30);
@@ -72,11 +107,13 @@ public class AddStockView extends JFrame implements ActionListener{
 		add.addActionListener(this);
 		clear = button("Clear", 100, 30);
 		clear.addActionListener(this);
+		update = button("Save", 100, 30);
+		update.addActionListener(this);
 		buttonPanel.add(back);
 		buttonPanel.add(clear);
+		buttonPanel.add(update);
 		buttonPanel.add(add);
-		
-		//Statistic Panel (Allows user to enter a stocks Information
+		//Statistic Panel (Allows user to enter a new stock's Information)
 		JPanel statisticPanel = new JPanel();
 		statisticPanel.setLayout(new GridLayout(0, 2));
 		statisticLabelList = new ArrayList<JLabel>();
@@ -111,10 +148,12 @@ public class AddStockView extends JFrame implements ActionListener{
 		mainPanel.setLayout(new BoxLayout(mainPanel, BoxLayout.Y_AXIS));
 		JPanel labelPanel = new JPanel();
 		labelPanel.setLayout(new BoxLayout(labelPanel, BoxLayout.X_AXIS));
-		titleLabel = new JLabel("Enter new stock statistics:");
-		labelPanel.add(titleLabel, SwingConstants.CENTER);
+		titleLabel = new JLabel("Enter new stock statistics:", SwingConstants.LEFT);
+		titleLabel.setFont(new Font("Lucida Grande", Font.BOLD, 14));
+		labelPanel.add(titleLabel);
 		mainPanel.add(labelPanel);
 		mainPanel.add(statisticPanel);
+		mainPanel.add(tablePanel);
 		mainPanel.add(buttonPanel);
 		
 		//Default frame settings: 
@@ -147,6 +186,8 @@ public class AddStockView extends JFrame implements ActionListener{
 			
 		} else if(pEvent.getActionCommand().equals("Clear")) {
 			clearAllTF();
+		} else if (pEvent.getActionCommand().equals("Save")) {
+			updateList();
 		}
 	}
 	/**
@@ -181,6 +222,7 @@ public class AddStockView extends JFrame implements ActionListener{
 	public JTextField statisticTextField(String text) { 
 		
 		JTextField newTextField = new JTextField(text);
+		newTextField.setForeground(Color.GRAY);
 		statisticTextFieldList.add(newTextField);
 		return newTextField;
 	}
@@ -191,9 +233,11 @@ public class AddStockView extends JFrame implements ActionListener{
 		try {
 			newStock = new Stock(nameT.getText(), symbolT.getText(), industryT.getText(), Double.parseDouble(stockPriceT.getText()),
 			Double.parseDouble(peT.getText()), Double.parseDouble(marketCapT.getText()), Double.parseDouble(yearStartT.getText()), Double.parseDouble(dividendT.getText()));
-			
+			mainList = main.getMainList();
+			mainList.add(newStock);
 			Writer writer = new Writer("ListOfStocks.txt");
-			writer.writeFile(newStock);
+			writer.writeFile(mainList);
+			addStockToTable(newStock);
 		} catch (NumberFormatException e) {
 			System.out.println("A double was not entered in JTextField");
 			JOptionPane.showMessageDialog(this, "You did not enter a number in one or more text fields", "ERROR", JOptionPane.ERROR_MESSAGE);
@@ -201,6 +245,75 @@ public class AddStockView extends JFrame implements ActionListener{
 			System.out.println("File not Found");
 		} catch (IOException e) {
 			System.out.println("Input Output Exception");
+		}
+		main.setList();
+		model.fireTableDataChanged();
+	}
+	/**
+	 * Adds a stock to the bottom of the table
+	 */
+	private void addStockToTable(Stock newStock) {
+		String[] addedData = new String[8];
+		addedData[0] = newStock.getName();
+		addedData[1] = newStock.getSymbol();
+		addedData[2] = newStock.getIndustry();
+		addedData[3] = Double.toString(newStock.getStockPrice());
+		addedData[4] = Double.toString(newStock.getPERatio());
+		addedData[5] = Double.toString(newStock.getMarketCap());
+		addedData[6] = Double.toString(newStock.getBeginningPrice());
+		addedData[7] = Double.toString(newStock.getDividend());
+		model.addRow(addedData);
+	}
+	/**
+	 * Takes the cell data from the table and writes it to the text file and refreshes the list in "main"
+	 */
+	private void updateList() {
+		try {
+			readCellsAndRefreshList();
+			Writer writer = new Writer("ListOfStocks.txt");
+			writer.writeFile(mainList);	
+			JOptionPane.showMessageDialog(this, "Stock data was updated", "Update Successful!", JOptionPane.PLAIN_MESSAGE);
+		} catch (FileNotFoundException e) {
+			System.out.println("File not found");
+		} catch (IOException e) {
+			System.out.println("Input Output Exception");
+		} catch (NumberFormatException e) {
+			System.out.println("A double was not entered in the statistic field");
+			JOptionPane.showMessageDialog(this, "You did not enter a number in one or more of the table cells that require numbers", "ERROR", JOptionPane.ERROR_MESSAGE);
+		}
+		main.setList();
+	}
+	
+	/**
+	 * reads cell data and sets the main list
+	 */
+	private void readCellsAndRefreshList() {
+		Stock currentStock;
+		mainList = main.getMainList();
+		for (int i = 0; i < model.getRowCount(); i++) {
+			currentStock = new Stock( (String) model.getValueAt(i, 0), (String) model.getValueAt(i, 1), (String) model.getValueAt(i, 2),
+					Double.parseDouble((String) model.getValueAt(i, 3)),Double.parseDouble((String) model.getValueAt(i, 4)),Double.parseDouble((String) model.getValueAt(i, 5)),
+					Double.parseDouble((String) model.getValueAt(i, 6)), Double.parseDouble((String) model.getValueAt(i, 7)));
+			mainList.set(i, currentStock);
+		}
+	}
+	/**
+	 * Inserts all of the stock data from an ArrayList to the table
+	 * @param mainList
+	 */
+	private void addListToTable(ArrayList<Stock> mainList) {
+		model.setRowCount(0);
+		String[] newData = new String[8];
+		for (Stock stock : mainList) {
+			newData[0] = stock.getName();
+			newData[1] = stock.getSymbol();
+			newData[2] = stock.getIndustry();
+			newData[3] = Double.toString(stock.getStockPrice());
+			newData[4] = Double.toString(stock.getPERatio());
+			newData[5] = Double.toString(stock.getMarketCap());
+			newData[6] = Double.toString(stock.getBeginningPrice());
+			newData[7] = Double.toString(stock.getDividend());
+			model.addRow(newData);
 		}
 	}
 	/**

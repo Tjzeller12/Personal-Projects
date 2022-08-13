@@ -2,6 +2,7 @@ package stockCompare;
 
 import java.awt.BorderLayout;
 import java.awt.Dimension;
+import java.awt.Font;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.FileNotFoundException;
@@ -34,8 +35,8 @@ public class CompareIndustryView extends JFrame implements ActionListener{
 	// Button Panel instance variable
 	private JButton back;
 	// instance variables used for other methods
-	private StockList mainList;
-	private StockList industryStocksList;
+	private ArrayList<Stock> mainList;
+	private ArrayList<Stock> industryStocksList;
 	private ArrayList<String> industryList;
 	private Searcher industrySearcher;
 	private String[] newData;
@@ -47,15 +48,19 @@ public class CompareIndustryView extends JFrame implements ActionListener{
 	private String[][] data = {{"N/A", "N/A", "N/A","N/A","N/A","N/A", "N/A"} };
 	private DefaultTableModel model;
 	
+	private Main main;
+	
 	/**
 	 * Constructs frame and adds all of the needed components to the frame. The main components are the button panel, select industry panel, industry table panel, and the main panel.
 	 */
-	public CompareIndustryView() {
+	public CompareIndustryView(Main pMain) {
+		
+		main = pMain;
 		
 		// Select Industry Panel is at the top of the frame and allows a user to select an industry and select the compare button
 		JPanel selectIndustryPanel = new JPanel();
 		selectIndustryPanel.setLayout(new BoxLayout(selectIndustryPanel, BoxLayout.X_AXIS));
-		selectIndustryLabel = new JLabel("Select an Industry: ");
+		selectIndustryLabel = new JLabel(" Select an Industry: ");
 		createIndustryList();
 		createComboBoxChoices();
 		selectIndustryCombo = new JComboBox(choices);
@@ -69,10 +74,13 @@ public class CompareIndustryView extends JFrame implements ActionListener{
 		// Industry Table Panel is mainly for displaying the stocks information within an industry and sorting them by rating
 		JPanel industryTablePanel = new JPanel();
 		industryTablePanel.setLayout(new BoxLayout(industryTablePanel, BoxLayout.Y_AXIS));
+		JPanel industryLabelPanel = new JPanel();
+		industryLabelPanel.setLayout(new BoxLayout(industryLabelPanel, BoxLayout.X_AXIS));
 		model = new DefaultTableModel(data, columNames);
 		industryStocksT = new JTable( model);
 		stocksSP = new JScrollPane(industryStocksT);
-		industryTablePanel.add(industrySelected);
+		industryLabelPanel.add(industrySelected);
+		industryTablePanel.add(industryLabelPanel);
 		industryTablePanel.add(stocksSP);
 		
 		// Button Panel is at the bottom of the frame and includes the back button allowing the user to go back to the previous frame
@@ -121,28 +129,20 @@ public class CompareIndustryView extends JFrame implements ActionListener{
 	 * Creates a list of all the industries on the text file without adding them twice
 	 */
 	private void createIndustryList() {
-		try {
-			Reader reader = new Reader();
-			reader.readFile("ListOfStocks.txt");
-			mainList = reader.getMainList();
-			industryList = new ArrayList<String>();
-	
-			boolean hasDuplicateIndustry;
-			for (int i = 0; i < mainList.getList().size(); i++) {
-				hasDuplicateIndustry = false;
-				for (int j = 0; j < industryList.size(); j++) {
-					if (industryList.get(j).equals(mainList.getList().get(i).getIndustry())) {
-						hasDuplicateIndustry = true;
-					}
+		mainList = main.getMainList();
+		industryList = new ArrayList<String>();
+		boolean hasDuplicateIndustry;
+		for (int i = 0; i < mainList.size(); i++) {
+			hasDuplicateIndustry = false;
+			for (int j = 0; j < industryList.size(); j++) {
+				if (industryList.get(j).equals(mainList.get(i).getIndustry())) {
+					hasDuplicateIndustry = true;
 				}
-				if (hasDuplicateIndustry == false) {
-					industryList.add(mainList.getList().get(i).getIndustry());
-				}
-				
 			}
-			
-		} catch (FileNotFoundException e) {
-			System.out.println("File not found");
+			if (hasDuplicateIndustry == false) {
+				industryList.add(mainList.get(i).getIndustry());
+			}
+				
 		}
 	}
 	
@@ -164,17 +164,18 @@ public class CompareIndustryView extends JFrame implements ActionListener{
 		model.setRowCount(0);
 		industrySearcher = new Searcher();
 		industryStocksList = industrySearcher.linearIndustrySearch(selectIndustryCombo.getSelectedItem().toString(), mainList);
-		Sorter.sort(industryStocksList.getList(), 0, industryStocksList.getList().size() - 1);
-		industrySelected.setText(selectIndustryCombo.getSelectedItem().toString() + ":");;
+		Sorter.sort(industryStocksList, 0, industryStocksList.size() - 1, Sorter.BY_RATING);
+		industrySelected.setText(selectIndustryCombo.getSelectedItem().toString() + ":");
+		industrySelected.setFont(new Font("Lucida Grande", Font.BOLD, 14));
 		newData = new String[7];
-		for (int i = 0; i < industryStocksList.getList().size(); i++) {
-			newData[0] = industryStocksList.getList().get(i).getName();
-			newData[1] = Double.toString(industryStocksList.getList().get(i).getRating());
-			newData[2] = Double.toString(industryStocksList.getList().get(i).getValue());
-			newData[3] = Double.toString(industryStocksList.getList().get(i).getSafety());
-			newData[4] = Double.toString(industryStocksList.getList().get(i).getStockPrice());
-			newData[5] = Double.toString(industryStocksList.getList().get(i).getPERatio());
-			newData[6] = Double.toString(industryStocksList.getList().get(i).getDividend());
+		for (int i = 0; i < industryStocksList.size(); i++) {
+			newData[0] = industryStocksList.get(i).getName();
+			newData[1] = Double.toString(industryStocksList.get(i).getRating());
+			newData[2] = Double.toString(industryStocksList.get(i).getValue());
+			newData[3] = Double.toString(industryStocksList.get(i).getSafety());
+			newData[4] = Double.toString(industryStocksList.get(i).getStockPrice());
+			newData[5] = Double.toString(industryStocksList.get(i).getPERatio());
+			newData[6] = Double.toString(industryStocksList.get(i).getDividend());
 			
 			model.addRow(newData);
 		}

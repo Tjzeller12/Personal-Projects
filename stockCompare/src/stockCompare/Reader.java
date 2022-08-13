@@ -2,6 +2,7 @@ package stockCompare;
 
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.util.ArrayList;
 import java.util.Scanner;
 /**
  * Reader has three methods: readFile() (reads stocks off of text file and adds them to a list), getMainList() (returns the list created), and closeReader() (closes the scanner)
@@ -22,7 +23,7 @@ public class Reader {
 	private Scanner scanner;
 	private Stock currentStock;
 	// Stock List
-	private StockList mainList;
+	private ArrayList<Stock> mainList;
 
 	/**
 	 * reads info off text files and constructs each instant interval with this information.
@@ -31,7 +32,7 @@ public class Reader {
 	 */
 	public void readFile(String pFile) throws FileNotFoundException { // 
 		
-		mainList = new StockList("Main List");
+		mainList = new ArrayList<Stock>();
 		
 		scanner = new Scanner(new File(pFile));
 
@@ -55,7 +56,7 @@ public class Reader {
 			
 			currentStock = new Stock(inName, inSymbol, inIndustry, inStockPrice, inPERatio, inMarketCap, inYearStart, inDividend);
 			
-			mainList.getList().add(currentStock);
+			mainList.add(currentStock);
 			
 		}
 		scanner.close();
@@ -65,7 +66,7 @@ public class Reader {
 	 * returns the list
 	 * @return mainList
 	 */
-	public StockList getMainList() {
+	public ArrayList<Stock> getMainList() {
 		return mainList;
 	}
 	

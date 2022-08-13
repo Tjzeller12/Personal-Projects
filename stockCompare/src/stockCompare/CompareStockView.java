@@ -2,6 +2,7 @@ package stockCompare;
 
 import java.awt.BorderLayout;
 import java.awt.Dimension;
+import java.awt.Font;
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -16,6 +17,7 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.JTextField;
+import javax.swing.SwingConstants;
 /**
  * The CompareStockView allows the user to compare 5 stocks of their choice
  * @author Thomas Zeller
@@ -39,7 +41,7 @@ public class CompareStockView extends JFrame implements ActionListener {
 	private JLabel prompt;
 	
 	// Other methods instance variables
-	private StockList mainList;
+	private ArrayList<Stock> mainList;
 	private Searcher searcher;
 	private Stock currentStock;
 	
@@ -51,11 +53,13 @@ public class CompareStockView extends JFrame implements ActionListener {
 	{"N/A", "N/A", "N/A", "N/A", "N/A", "N/A"}, {"N/A", "N/A", "N/A", "N/A", "N/A", "N/A"}, {"N/A", "N/A", "N/A", "N/A", "N/A", "N/A"}};
 	private JTable statisticTable;
 	
+	private Main main;
 	/**
 	 * Constructs frame and adds all of the needed components to the frame. The main components are the button panel, enter stock panel, table panel, and the main panel.
 	 */
-	public CompareStockView() {
+	public CompareStockView(Main pMain) {
 		
+		main = pMain;
 		// Enter Stock Panel includes the user inputs and is located to the left of the Table Panel
 		JPanel enterStockPanel = new JPanel();
 		enterStockPanel.setLayout(new GridLayout(6, 2));
@@ -91,7 +95,8 @@ public class CompareStockView extends JFrame implements ActionListener {
 		// Main Panel includes all other panels
 		JPanel mainPanel = new JPanel ();
 		mainPanel.setLayout(new BorderLayout());
-		prompt = new JLabel("Compare 5 stocks by entering their symbols: ");
+		prompt = new JLabel("Compare 5 stocks by entering their symbols: ", SwingConstants.CENTER);
+		prompt.setFont(new Font("Lucida Grande", Font.BOLD, 14));
 		mainPanel.add(prompt, BorderLayout.NORTH);
 		mainPanel.add(tablePanel, BorderLayout.CENTER);
 		mainPanel.add(buttonPanel, BorderLayout.SOUTH);
@@ -157,34 +162,25 @@ public class CompareStockView extends JFrame implements ActionListener {
 	 */
 	private void updateTable() {
 		
-		Reader reader = new Reader();
-		
-		try {
-			reader.readFile("ListOfStocks.txt");
-			mainList = reader.getMainList();
+		mainList = main.getMainList();
 			
-			for (int i = 0; i < 5; i++) {	
-				searcher = new Searcher();
-				currentStock = searcher.linearSymbolSearch(stockTFList[i].getText(), mainList);
+		for (int i = 0; i < 5; i++) {	
+			searcher = new Searcher();
+			currentStock = searcher.linearSymbolSearch(stockTFList[i].getText(), mainList);
 	
-				if (currentStock.getSymbol().equals("NONE")) {	
-					for (int j = 0; j < 6; j++) {
-						data[i][j] = "N/A";
-					}	
-				} else {		
-					data[i][0] = Double.toString(currentStock.getRating());
-					data[i][1] = Double.toString(currentStock.getValue());
-					data[i][2] = Double.toString(currentStock.getSafety());
-					data[i][3] = Double.toString(currentStock.getStockPrice());
-					data[i][4] = Double.toString(currentStock.getPERatio());
-					data[i][5] = Double.toString(currentStock.getDividend());		
-				}
-				statisticTable.repaint();
+			if (currentStock.getSymbol().equals("NONE")) {	
+				for (int j = 0; j < 6; j++) {
+					data[i][j] = "N/A";
+				}	
+			} else {		
+				data[i][0] = Double.toString(currentStock.getRating());
+				data[i][1] = Double.toString(currentStock.getValue());
+				data[i][2] = Double.toString(currentStock.getSafety());
+				data[i][3] = Double.toString(currentStock.getStockPrice());
+				data[i][4] = Double.toString(currentStock.getPERatio());
+				data[i][5] = Double.toString(currentStock.getDividend());		
 			}
-		} catch (FileNotFoundException e) {
-			System.out.println("File not found");
-		} finally {
-			reader.closeReader();
+			statisticTable.repaint();
 		}
 		
 	}

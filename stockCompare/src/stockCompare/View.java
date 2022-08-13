@@ -77,11 +77,11 @@ public class View extends JFrame implements ActionListener {
 		if (pEvent.getActionCommand().equals("EXIT")) {
 			System.exit(-100);
 		} else if (pEvent.getActionCommand().equals("Add Stock")) {
-			AddStockView newAddStock = new AddStockView();
+			AddStockView newAddStock = new AddStockView(main);
 		} else if (pEvent.getActionCommand().equals("Industry Compare")) {
-			CompareIndustryView newIndustryView = new CompareIndustryView();
+			CompareIndustryView newIndustryView = new CompareIndustryView(main);
 		} else if (pEvent.getActionCommand().equals("Stock Compare")) {
-			CompareStockView newStockView = new CompareStockView();
+			CompareStockView newStockView = new CompareStockView(main);
 		}
 	}
 	

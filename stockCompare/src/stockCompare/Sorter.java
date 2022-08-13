@@ -3,35 +3,57 @@ package stockCompare;
 
 import java.util.ArrayList;
 /**
- * Uses a quick sort algorithm with a time complexity of O(n*log(n))
+ * Uses a quick sort algorithm with an avarage time complexity of O(n*log(n))
  * @author Thomas Zeller
  *
  */
 public class Sorter {
+	final static int BY_RATING = 1;
+	final static int BY_NAME = 0;
 	/**
 	 * 
 	 * @param pList
 	 * @param pFromIndex
 	 * @param pToIndex
+	 * @param p
 	 * @return Right index (indexR)
 	 */
-	private static int partition(ArrayList<Stock> pList, int pFromIndex, int pToIndex) {
-		Stock pivot = pList.get(pFromIndex);
-		int indexL = pFromIndex - 1, indexR = pToIndex + 1;
-		while (indexL < indexR) {
-			indexL++;
-			while(pList.get(indexL).compareTo(pivot) > 0) {
+	private static int partition(ArrayList<Stock> pList, int pFromIndex, int pToIndex, int sortedBy) {
+		if (sortedBy == BY_RATING) {
+			Stock pivot = pList.get(pFromIndex);
+			int indexL = pFromIndex - 1, indexR = pToIndex + 1;
+			while (indexL < indexR) {
 				indexL++;
-			}
-			indexR--;
-			while(pList.get(indexR).compareTo(pivot) < 0) {
+				while(pList.get(indexL).compareTo(pivot) > 0) {
+					indexL++;
+				}
 				indexR--;
+				while(pList.get(indexR).compareTo(pivot) < 0) {
+					indexR--;
+				}
+				if (indexL < indexR) {
+					swap(pList, indexL, indexR);
+				}
 			}
-			if (indexL < indexR) {
-				swap(pList, indexL, indexR);
+			return indexR;
+		} else {
+			Stock pivot = pList.get(pFromIndex);
+			int indexL = pFromIndex - 1, indexR = pToIndex + 1;
+			while (indexL < indexR) {
+				indexL++;
+				while(pList.get(indexL).getName().compareTo(pivot.getName()) < 0) {
+					indexL++;
+				}
+				indexR--;
+				while(pList.get(indexR).getName().compareTo(pivot.getName()) > 0) {
+					indexR--;
+				}
+				if (indexL < indexR) {
+					swap(pList, indexL, indexR);
+				}
 			}
+			return indexR;
 		}
-		return indexR;
 	}
 	/**
 	 * Swaps a Stock at index1 with a Stock at index2
@@ -50,11 +72,10 @@ public class Sorter {
 	 * @param pFromIndex
 	 * @param pToIndex
 	 */
-	public static void sort(ArrayList<Stock> pList, int pFromIndex, int pToIndex) {
+	public static void sort(ArrayList<Stock> pList, int pFromIndex, int pToIndex, int sortedBy) {
 		if (pFromIndex >= pToIndex) return;
-		
-		int partitionIndex = partition(pList, pFromIndex, pToIndex);
-		sort(pList, pFromIndex, partitionIndex);
-		sort(pList, partitionIndex + 1, pToIndex);
+		int partitionIndex = partition(pList, pFromIndex, pToIndex, sortedBy);
+		sort(pList, pFromIndex, partitionIndex, sortedBy);
+		sort(pList, partitionIndex + 1, pToIndex, sortedBy);
 	}
 }
